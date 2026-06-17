@@ -4,7 +4,12 @@ import { parseFilters } from './filter-parser'
 const defaultTagRE = /\{\{((?:.|\r?\n)+?)\}\}/g
 const regexEscapeRE = /[-.*+?^${}()|[\]\/\\]/g
 
+const MAX_DELIMITER_LENGTH = 64
+
 const buildRegex = cached(delimiters => {
+  if (delimiters[0].length > MAX_DELIMITER_LENGTH || delimiters[1].length > MAX_DELIMITER_LENGTH) {
+    return /(?!)/g
+  }
   const open = delimiters[0].replace(regexEscapeRE, '\\$&')
   const close = delimiters[1].replace(regexEscapeRE, '\\$&')
   return new RegExp(open + '((?:.|\\n)+?)' + close, 'g')
